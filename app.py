@@ -2,14 +2,23 @@ from flask import Flask, render_template, jsonify, request
 from pymongo import MongoClient
 from googletrans import Translator
 from bson import ObjectId
+import os
+import logging
 
 app = Flask(__name__)
 
-# MongoDB Atlas connection string
-mongo_uri = "mongodb+srv://micoh:englich@3scobar.uzdzj3q.mongodb.net/"
-client = MongoClient(mongo_uri)
-db = client['englich']
-collection = db['output_1']
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
+
+# MongoDB Atlas connection string from environment variable
+mongo_uri = os.getenv('MONGO_URI', "mongodb+srv://micoh:englich@3scobar.uzdzj3q.mongodb.net/")
+try:
+    client = MongoClient(mongo_uri)
+    db = client['englich']
+    collection = db['output_1']
+except Exception as e:
+    logging.error(f"Error connecting to MongoDB: {e}")
+    db = None
 
 translator = Translator()
 
@@ -20,7 +29,7 @@ def get_untranslated_sentence_from_mongodb(offset):
         sentence = next(sentences, None)
         return sentence
     except Exception as err:
-        print(f"Error: {err}")
+        logging.error(f"Error: {err}")
         return None
 
 # Function to translate a sentence
@@ -29,7 +38,7 @@ def translate_sentence(sentence, src_language='en', dest_language='ny'):
         translation = translator.translate(sentence, src=src_language, dest=dest_language)
         return translation.text
     except Exception as e:
-        print(f"Translation failed for '{sentence}': {e}")
+        logging.error(f"Translation failed for '{sentence}': {e}")
         return None
 
 # Route to display the initial page
@@ -56,21 +65,15 @@ def submit_translation():
     sentence_id = data['id']
     chichewa_text = data['chichewa']
     try:
-        # Debugging: Print the ID and translated text
-        print(f"Updating document with ID: {sentence_id}, Chichewa: {chichewa_text}")
-        
-        # Ensure we use ObjectId for the MongoDB update
+        logging.debug(f"Updating document with ID: {sentence_id}, Chichewa: {chichewa_text}")
         result = collection.update_one({'_id': ObjectId(sentence_id)}, {"$set": {'Chichewa': chichewa_text}})
-        
-        # Debugging: Print the result of the update operation
-        print(f"Matched {result.matched_count} document(s), Modified {result.modified_count} document(s)")
-        
+        logging.debug(f"Matched {result.matched_count} document(s), Modified {result.modified_count} document(s)")
         if result.modified_count > 0:
             return jsonify(success=True)
         else:
             return jsonify(success=False, message="No documents were updated.")
     except Exception as err:
-        print(f"Error: {err}")
+        logging.error(f"Error: {err}")
         return jsonify(success=False, message=str(err))
 
 if __name__ == '__main__':

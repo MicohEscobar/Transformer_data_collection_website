@@ -1,3 +1,5 @@
 Flask
 pymongo
+googletrans==4.0.0-rc1  # Specify a stable version of googletrans
 dnspython
+bson
