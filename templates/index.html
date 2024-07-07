@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MySQL Data Viewer</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script type="text/javascript">
+        let offset = 0;
+        let currentId = null;
+
+        function fetchNextSentence() {
+            $.getJSON(`/next_sentence/${offset}`, function(data) {
+                if (data.result) {
+                    currentId = data.result.id;
+                    $('#english').text(data.result.english);
+                    $('#chichewa').val(data.result.chichewa);
+                    offset++;
+                } else {
+                    $('#english').text('No more sentences.');
+                    $('#chichewa').val('');
+                }
+            });
+        }
+
+        function submitTranslation() {
+            const chichewaText = $('#chichewa').val();
+            if (currentId !== null && chichewaText !== '') {
+                $.ajax({
+                    url: '/submit_translation',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ id: currentId, chichewa: chichewaText }),
+                    success: function(response) {
+                        if (response.success) {
+                            alert('Translation submitted successfully!');
+                            fetchNextSentence();
+                        } else {
+                            alert('Failed to submit translation.');
+                        }
+                    }
+                });
+            }
+        }
+
+        $(document).ready(function() {
+            $('#next-button').click(fetchNextSentence);
+            $('#submit-button').click(submitTranslation);
+            fetchNextSentence(); // Load the first sentence on page load
+        });
+    </script>
+</head>
+<body>
+    <form>
+        <h1>Translate </h1>
+        <p><strong>English:</strong> <span id="english"></span></p>
+        <p><strong>Chichewa:</strong></p>
+        <textarea id="chichewa" rows="4" cols="50"></textarea>
+    </form>
+    <div class="button-container">
+        <button id="next-button"><i class="fas fa-forward"></i> Next</button>
+        <button id="submit-button"><i class="fas fa-check"></i> Submit</button>
+    </div>
+
+</body>
+</html>

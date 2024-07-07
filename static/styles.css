@@ -1,0 +1,143 @@
+/* General styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Form container */
+form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    max-width: 600px;
+    width: 100%;
+}
+
+/* Labels and Text */
+p {
+    font-size: 16px;
+    color: #555;
+    margin: 10px 0;
+}
+
+#english {
+    display: block;
+    margin: 10px 0;
+    font-size: 18px;
+    color: #007BFF;
+}
+
+/* Textarea styling */
+textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    resize: vertical;
+    margin-bottom: 20px;
+}
+
+/* Button styling */
+.button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+button {
+    display: block;
+    width: 100%;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-bottom: 10px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#submit-button {
+    background-color: #28a745;
+}
+
+#submit-button:hover {
+    background-color: #218838;
+}
+
+/* Button icons */
+button i {
+    margin-right: 8px;
+}
+
+/* Step wizard */
+.step-wizard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.step-wizard-list {
+    display: flex;
+    list-style: none;
+    padding: 0;
+}
+
+.step-wizard-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    margin: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.current-item {
+    background-color: #f0f0f0;
+}
+
+.progress-count {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.progress-label {
+    margin-top: 10px;
+    font-size: 1.2rem;
+}
+
+.progress-bar {
+    width: 100%;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 20px;
+    background-color: #4caf50;
+    width: 0;
+    transition: width 0.3s ease;
+}
