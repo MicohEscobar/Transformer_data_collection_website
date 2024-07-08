@@ -85,5 +85,5 @@ def submit_translation():
         return jsonify(success=False, message=str(err))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=9000)
 
