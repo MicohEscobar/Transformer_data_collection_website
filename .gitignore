@@ -1,1 +1,4 @@
 .vercel
+.env
+/___pycache__/
+___pycache__/sss

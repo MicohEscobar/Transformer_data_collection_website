@@ -1,24 +1,26 @@
+import os
 from flask import Flask, render_template, jsonify, request
-from pymongo import MongoClient
+# from pymongo import MongoClient
+from dotenv import load_dotenv
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+from flask_cors import CORS
 from googletrans import Translator
 from bson import ObjectId
-import os
-import logging
 
 app = Flask(__name__)
+load_dotenv()
+CORS(app)
 
-# Set up logging
-logging.basicConfig(level=logging.DEBUG)
+def index():
+    # Accessing the X-Real-IP header to get the client's real IP address
+    real_ip = request.headers.get('X-Real-IP', request.remote_addr)
 
-# MongoDB Atlas connection string from environment variable
-mongo_uri = os.getenv('MONGO_URI', "mongodb+srv://micoh:englich@3scobar.uzdzj3q.mongodb.net/")
-try:
-    client = MongoClient(mongo_uri)
-    db = client['englich']
-    collection = db['output_1']
-except Exception as e:
-    logging.error(f"Error connecting to MongoDB: {e}")
-    db = None
+# MongoDB Atlas connection string
+mongo_uri = os.getenv('MONGO_URL')
+client = MongoClient(mongo_uri, server_api=ServerApi('1'))
+db = client['englich']
+collection = db['output_1']
 
 translator = Translator()
 
@@ -29,7 +31,7 @@ def get_untranslated_sentence_from_mongodb(offset):
         sentence = next(sentences, None)
         return sentence
     except Exception as err:
-        logging.error(f"Error: {err}")
+        print(f"Error: {err}")
         return None
 
 # Function to translate a sentence
@@ -38,7 +40,7 @@ def translate_sentence(sentence, src_language='en', dest_language='ny'):
         translation = translator.translate(sentence, src=src_language, dest=dest_language)
         return translation.text
     except Exception as e:
-        logging.error(f"Translation failed for '{sentence}': {e}")
+        print(f"Translation failed for '{sentence}': {e}")
         return None
 
 # Route to display the initial page
@@ -65,16 +67,23 @@ def submit_translation():
     sentence_id = data['id']
     chichewa_text = data['chichewa']
     try:
-        logging.debug(f"Updating document with ID: {sentence_id}, Chichewa: {chichewa_text}")
+        # Debugging: Print the ID and translated text
+        print(f"Updating document with ID: {sentence_id}, Chichewa: {chichewa_text}")
+
+        # Ensure we use ObjectId for the MongoDB update
         result = collection.update_one({'_id': ObjectId(sentence_id)}, {"$set": {'Chichewa': chichewa_text}})
-        logging.debug(f"Matched {result.matched_count} document(s), Modified {result.modified_count} document(s)")
+
+        # Debugging: Print the result of the update operation
+        print(f"Matched {result.matched_count} document(s), Modified {result.modified_count} document(s)")
+
         if result.modified_count > 0:
             return jsonify(success=True)
         else:
             return jsonify(success=False, message="No documents were updated.")
     except Exception as err:
-        logging.error(f"Error: {err}")
+        print(f"Error: {err}")
         return jsonify(success=False, message=str(err))
 
 if __name__ == '__main__':
     app.run(debug=True)
+

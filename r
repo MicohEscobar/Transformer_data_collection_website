@@ -20,7 +20,6 @@ Jinja2==3.1.4
 MarkupSafe==2.1.5
 pymongo==4.8.0
 python-dateutil==2.9.0.post0
-python-dotenv==1.0.1
 rfc3986==1.5.0
 six==1.16.0
 sniffio==1.3.1
